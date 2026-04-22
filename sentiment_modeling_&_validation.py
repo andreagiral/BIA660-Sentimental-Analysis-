@@ -40,15 +40,15 @@ warnings.filterwarnings("ignore")
 # =============================================================================
 # Root of the repo (directory this script lives in)
 # Path of this file (where my .py lives)
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Move ONE level up → repo root
-REPO_ROOT = os.path.dirname(CURRENT_DIR)
-
+REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 # paths
 REDDIT_DIR = os.path.join(REPO_ROOT, "data", "clean", "reddit")
 SCHEDULE_DIR = os.path.join(REPO_ROOT, "data", "clean", "mlb")
 OUTPUT_DIR = os.path.join(REPO_ROOT, "results")
+print("REPO_ROOT:", REPO_ROOT)                          
+print("FILES IN ROOT:", os.listdir(REPO_ROOT))
+print("REDDIT_DIR:", REDDIT_DIR)
+print("SCHEDULE_DIR:", SCHEDULE_DIR)
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 # =============================================================================

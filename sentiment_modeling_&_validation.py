@@ -45,6 +45,7 @@ REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 REDDIT_DIR = os.path.join(REPO_ROOT, "data", "clean", "reddit")
 SCHEDULE_DIR = os.path.join(REPO_ROOT, "data", "clean", "mlb")
 OUTPUT_DIR = os.path.join(REPO_ROOT, "results")
+
 print("REPO_ROOT:", REPO_ROOT)                          
 print("FILES IN ROOT:", os.listdir(REPO_ROOT))
 print("REDDIT_DIR:", REDDIT_DIR)
@@ -100,16 +101,14 @@ TEAM_FILES = {
 # =============================================================================
 # SECTION 1 -- DATA LOADING
 # =============================================================================
-
 # Candidate column names searched in order, case-insensitively.
-# NOTEAdd variants here if Kenneth's files use different names.
+# NOTE: Add variants here if Kenneth's files use different names.
 _TITLE_CANDIDATES  = ["title"]
 _BODY_CANDIDATES   = ["selftext", "body", "text", "content", "comment_body"]
 _TIME_CANDIDATES   = ["created_utc", "created", "timestamp", "utc", "time"]
 _AUTHOR_CANDIDATES = ["author", "username", "user"]
 _UPS_CANDIDATES    = ["ups", "score", "upvotes", "likes"]
 _LINK_CANDIDATES   = ["permalink", "url", "link", "post_url"]
-
 
 def _find_col(df, candidates):
     """Return the first matching column name (case-insensitive). Returns None if not found."""
@@ -119,7 +118,6 @@ def _find_col(df, candidates):
             return lowered[c.lower()]
     return None
 
-
 def _safe_get(df, candidates, default=""):
     """Extract a Series by candidate column names; return default Series if none found."""
     col = _find_col(df, candidates)
@@ -127,10 +125,9 @@ def _safe_get(df, candidates, default=""):
         return df[col].fillna(default).astype(str)
     return pd.Series(default, index=df.index, dtype=str)
 
-
 def load_posts(filepath, team):
     """
-    Load a cleaned posts CSV, normalize columns defensively.
+    Load cleaned posts CSV, normalize columns defensively.
     Posts have both a title and a body (selftext).
     """
     df = pd.read_csv(filepath, low_memory=False)
@@ -146,10 +143,9 @@ def load_posts(filepath, team):
     return df[["team", "record_type", "author", "created_utc",
                "title_raw", "body_raw", "ups", "permalink"]]
 
-
 def load_comments(filepath, team):
     """
-    Load a cleaned comments CSV, normalize columns defensively.
+    Load cleaned comments CSV, normalize columns defensively.
     Comments have no title -- title_raw is left empty.
     """
     df = pd.read_csv(filepath, low_memory=False)
@@ -165,7 +161,6 @@ def load_comments(filepath, team):
     return df[["team", "record_type", "author", "created_utc",
                "title_raw", "body_raw", "ups", "permalink"]]
 
-
 def _clean_text(s):
     """Strip URLs, markdown artifacts, and collapse whitespace."""
     s = re.sub(r"http\S+", " ", str(s))           # remove URLs
@@ -173,7 +168,6 @@ def _clean_text(s):
     s = re.sub(r"[^\w\s.,!?'-]", " ", s)           # strip misc symbols
     s = re.sub(r"\s+", " ", s).strip()
     return s
-
 
 def combine_title_body(df):
     """
@@ -184,7 +178,6 @@ def combine_title_body(df):
     df["text"] = (df["title_raw"] + " " + df["body_raw"]).str.strip()
     df["text"] = df["text"].apply(_clean_text)
     return df
-
 
 def utc_to_date(utc_series):
     """Convert UNIX UTC integer timestamps to YYYY-MM-DD strings."""
@@ -357,7 +350,6 @@ def load_sports_lexicon(filepath=None):
 
     print("[INFO] Sports lexicon not loaded -- sports_sentiment set to neutral (0.0).")
     return {}
-
 
 def compute_sports_sentiment(texts, lexicon):
     """

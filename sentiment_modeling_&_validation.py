@@ -30,8 +30,10 @@ import re
 import warnings
 import numpy as np
 import pandas as pd
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from sklearn.feature_extraction.text import TfidfVectorizer
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+# from nltk.sentiment import SentimentIntensityAnalyzer
+from baseball_lexicon import baseball_lexicon
 
 warnings.filterwarnings("ignore")
 
@@ -322,55 +324,68 @@ def get_top_tfidf_terms(df, vectorizer, matrix, top_n=20):
 # Kenneth's layer goes here. Do not modify the function signatures.
 # =============================================================================
 
-def load_sports_lexicon(filepath=None):
+# nltk.download("vader_lexicon", quiet=True)
+
+# Initialize VADER analyzer
+sia = SentimentIntensityAnalyzer()
+
+# Update VADER with custom lexicon
+sia.lexicon.update(baseball_lexicon)
+
+def extract_phrases(text, lexicon):
+    matched = []
+    
+    # Sort phrases by length (longest first)
+    phrases = sorted(
+        [k for k in lexicon if " " in k],
+        key=lambda x: len(x.split()),
+        reverse=True
+    )
+    
+    for phrase in phrases:
+        if phrase in text:
+            matched.append(phrase)
+            text = text.replace(phrase, "")  # prevent double counting
+    
+    return matched, text
+
+def score_custom_lexicon(text):
+    score = 0.0
+    
+    # Extract phrases first
+    phrases, remaining_text = extract_phrases(text, baseball_lexicon)
+    
+    for phrase in phrases:
+        score += baseball_lexicon.get(phrase, 0.0)
+    
+    # Token-level scoring
+    tokens = re.findall(r"\b\w+\b", remaining_text)
+    
+    for token in tokens:
+        score += baseball_lexicon.get(token, 0.0)
+    
+    return score
+
+def compute_sports_sentiment(texts):
     """
-    PLACEHOLDER -- load Kenneth's sports-specific sentiment lexicon.
-
-    Expected input when ready:
-        A CSV with columns [word, score] where score is a float in [-1, 1].
-        Example rows:
-            homerun, 0.9
-            walkoff, 0.85
-            strikeout, -0.3
-            error, -0.5
-
-    TO INTEGRATE KENNETH'S FILE:
-        1. Uncomment the two lines in the block below.
-        2. Pass his filepath via sports_lexicon_path= in run_pipeline().
-        3. No other changes needed -- compute_sports_sentiment() handles the rest.
-
-    Returns: dict mapping lowercase token -> float score
+    Uses custom baseball-aware sentiment logic.
+    Returns normalized score in [-1, 1] per text.
     """
-    if filepath and os.path.exists(filepath):
-        # ---- Uncomment when Kenneth's file is ready ----
-        # lex_df = pd.read_csv(filepath)
-        # return dict(zip(lex_df["word"].str.lower().str.strip(),
-        #                 lex_df["score"].astype(float)))
-        pass
 
-    print("[INFO] Sports lexicon not loaded -- sports_sentiment set to neutral (0.0).")
-    return {}
+    # Lowercase
+    texts = texts.astype(str).str.lower()
 
-def compute_sports_sentiment(texts, lexicon):
-    """
-    PLACEHOLDER -- score each text using Kenneth's sports-specific lexicon.
+    # VADER scores
+    # vader_scores = texts.apply(lambda t: sia.polarity_scores(t)["compound"])
 
-    For each text: tokenize, look up each token in the lexicon,
-    and return the mean score of matched tokens. Returns 0.0 (neutral)
-    if no tokens match or the lexicon is empty.
+    # Custom lexicon scores
+    custom_scores = texts.apply(lambda t: score_custom_lexicon(t))
 
-    This function requires NO changes when Kenneth delivers his lexicon.
-    Just pass the real dict from load_sports_lexicon() and it works.
-    """
-    if not lexicon:
-        return pd.Series(0.0, index=texts.index)
+    # Normalize custom scores
+    custom_scores_norm = custom_scores.apply(lambda s: max(min(s / 10, 1), -1))
 
-    def _score_one(text):
-        tokens = re.findall(r"\b\w+\b", str(text).lower())
-        matched = [lexicon[t] for t in tokens if t in lexicon]
-        return float(np.mean(matched)) if matched else 0.0
-
-    return texts.apply(_score_one)
+    # Clip to valid range just in case
+    return custom_scores_norm
 
 # =============================================================================
 # SECTION 5 -- FINAL SENTIMENT SCORE
@@ -544,8 +559,6 @@ def run_pipeline(
 
     Args:
         team_files (dict):          Team config dict. Defaults to TEAM_FILES above.
-        sports_lexicon_path (str):  Path to Kenneth's lexicon CSV once ready.
-                                    Pass as: sports_lexicon_path="path/to/file.csv"
         run_validation (bool):      Whether to print the validation report.
 
     Returns:
@@ -602,10 +615,9 @@ def run_pipeline(
     # Compute top terms per team for validation/analysis (not used in scoring)
     top_terms = get_top_tfidf_terms(df, vectorizer, tfidf_matrix, top_n=20)
 
-    # ---- Sports sentiment (Kenneth's placeholder) ----
+    # ---- Sports sentiment ----
     print("[INFO] Computing sports sentiment...")
-    lexicon = load_sports_lexicon(sports_lexicon_path)
-    df["sports_sentiment"] = compute_sports_sentiment(df["text"], lexicon)
+    df["sports_sentiment"] = compute_sports_sentiment(df["text"])
 
     # ---- Final combined score ----
     print("[INFO] Computing final sentiment score...")
@@ -686,7 +698,6 @@ def run_pipeline(
 if __name__ == "__main__":
     results = run_pipeline(
         team_files=TEAM_FILES,
-        sports_lexicon_path=None,   # <-- set to Kenneth's CSV path when ready
         run_validation=True
     )
     print(f"\n[DONE] Pipeline complete.")

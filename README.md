@@ -38,25 +38,30 @@ Sampled data is saved to `data/sampled/<TEAM_ID>_posts.jsonl` and `data/sampled/
 
 Preprocesses and cleans MLB csv data and Reddit jsonl data. All data is saved as new CSV files.
 
-Cleaned data is saved into two directories: `data/clean/mlb` and `data/clean/reddit`.
-- `data/clean/mlb/<TEAM_ID>_2025.csv`
-- `data/clean/reddit/<TEAM_ID>_posts.csv` and `data/clean/reddit/<TEAM_ID>_comments.csv`.
+Cleaned data is sorted into two directories and saved as follows:
+- `data/clean/mlb/`
+    - `data/clean/mlb/<TEAM_ID>_2025.csv`
+- `data/clean/reddit/`.
+    - `data/clean/reddit/<TEAM_ID>_posts.csv`
+    - `data/clean/reddit/<TEAM_ID>_comments.csv`.
 
-## Notes on raw data fields
+## Notes
 
-### Reddit - JSON
+### Raw data fields
 
-- "ups" / "score"
-    - both seem to indicate upvotes, but perhaps "score" considers downvotes and "ups" does not
-- "created" / "created_utc"
+#### Reddit Post & Comment Data - JSONL
+
+- `ups` / `score`
+    - Both seem to indicate upvotes, but perhaps `score` considers downvotes and `ups` does not
+- `created` / `created_utc`
     - Both seem to be the same - a unix timestamp of creation date
-    - access with datetime.fromtimestamp()
+    - Can access with datetime.fromtimestamp()
 
-### MLB Statistics - CSV
+#### MLB Statistics - CSV
 
-- "W/L" - Win/Loss
-    - Options are 'W', 'L', 'W-wo', and 'L-wo'
+- `W/L` - Win/Loss
+    - Possible values are 'W', 'L', 'W-wo', and 'L-wo'
     - '-wo' indicates a walk-off
-    - There may be additional options, like for ties (which are rare)
-- "R" - Runs scored
-- "RA" - Runs allowed
+    - There may be additional options, like for ties (which are rare), but I haven't confirmed
+- `R` - Runs scored
+- `RA` - Runs allowed

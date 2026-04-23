@@ -349,20 +349,20 @@ def extract_phrases(text, lexicon):
     
     return matched, text
 
-def score_custom_lexicon(text, lexicon):
+def score_custom_lexicon(text):
     score = 0.0
     
     # Extract phrases first
-    phrases, remaining_text = extract_phrases(text, lexicon)
+    phrases, remaining_text = extract_phrases(text, baseball_lexicon)
     
     for phrase in phrases:
-        score += lexicon.get(phrase, 0.0)
+        score += baseball_lexicon.get(phrase, 0.0)
     
     # Token-level scoring
     tokens = re.findall(r"\b\w+\b", remaining_text)
     
     for token in tokens:
-        score += lexicon.get(token, 0.0)
+        score += baseball_lexicon.get(token, 0.0)
     
     return score
 
@@ -376,19 +376,16 @@ def compute_sports_sentiment(texts):
     texts = texts.astype(str).str.lower()
 
     # VADER scores
-    vader_scores = texts.apply(lambda t: sia.polarity_scores(t)["compound"])
+    # vader_scores = texts.apply(lambda t: sia.polarity_scores(t)["compound"])
 
     # Custom lexicon scores
-    custom_scores = texts.apply(lambda t: score_custom_lexicon(t, baseball_lexicon))
+    custom_scores = texts.apply(lambda t: score_custom_lexicon(t))
 
     # Normalize custom scores
     custom_scores_norm = custom_scores.apply(lambda s: max(min(s / 10, 1), -1))
 
-    # Combine
-    final_scores = (0.6 * vader_scores) + (0.4 * custom_scores_norm)
-
     # Clip to valid range just in case
-    return final_scores.clip(-1, 1)
+    return custom_scores_norm
 
 # =============================================================================
 # SECTION 5 -- FINAL SENTIMENT SCORE
@@ -562,8 +559,6 @@ def run_pipeline(
 
     Args:
         team_files (dict):          Team config dict. Defaults to TEAM_FILES above.
-        sports_lexicon_path (str):  Path to Kenneth's lexicon CSV once ready.
-                                    Pass as: sports_lexicon_path="path/to/file.csv"
         run_validation (bool):      Whether to print the validation report.
 
     Returns:
@@ -703,7 +698,6 @@ def run_pipeline(
 if __name__ == "__main__":
     results = run_pipeline(
         team_files=TEAM_FILES,
-        sports_lexicon_path=None,   # <-- set to Kenneth's CSV path when ready
         run_validation=True
     )
     print(f"\n[DONE] Pipeline complete.")

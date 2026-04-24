@@ -25,3 +25,5 @@ env/
 
 # Logs
 *.log
+results/sentiment_results
+results/sentiment_results.csv

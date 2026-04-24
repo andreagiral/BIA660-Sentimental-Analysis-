@@ -1,5 +1,5 @@
 """
-Design overview:
+Pipeline overview:
   1. Load cleaned Reddit posts + comments CSVs (repo-relative paths).
   2. Combine title + body into a single 'text' field.
   3. VADER baseline sentiment  ->  vader_sentiment   (primary signal)
@@ -10,13 +10,8 @@ Design overview:
              This is a lightweight directional nudge, not a classifier.
          (b) Top-term analysis: identify the highest TF-IDF terms per team
              for qualitative interpretation (saved to summary).
-  5. Sports sentiment placeholder  ->  sports_sentiment
-       Returns 0.0 until Kenneth delivers his lexicon.
-       Swap in his file at sports_lexicon_path= with zero other changes.
-  6. Final score = weighted combination of the three components.
-       Weights are constants at the top of combine_sentiment() and are
-       labelled as INITIAL DEFAULTS -- tune them after Kenneth's layer
-       is integrated and validation results are reviewed.
+  5. Baseball lexicon sentiment ->  sports_sentiment  (domain-specific signal)
+  6. Final score = weighted combination of the three components ->  final_sentiment
   7. MLB schedule merged only for validation/sanity checks (win/loss
      direction test). Schedule data never influences sentiment scores.
 
@@ -32,7 +27,6 @@ import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-# from nltk.sentiment import SentimentIntensityAnalyzer
 from baseball_lexicon import baseball_lexicon
 
 warnings.filterwarnings("ignore")
@@ -41,7 +35,6 @@ warnings.filterwarnings("ignore")
 # PATH CONFIG
 # =============================================================================
 # Root of the repo (directory this script lives in)
-# Path of this file (where my .py lives)
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
 # paths
 REDDIT_DIR = os.path.join(REPO_ROOT, "data", "clean", "reddit")
@@ -104,7 +97,6 @@ TEAM_FILES = {
 # SECTION 1 -- DATA LOADING
 # =============================================================================
 # Candidate column names searched in order, case-insensitively.
-# NOTE: Add variants here if Kenneth's files use different names.
 _TITLE_CANDIDATES  = ["title"]
 _BODY_CANDIDATES   = ["selftext", "body", "text", "content", "comment_body"]
 _TIME_CANDIDATES   = ["created_utc", "created", "timestamp", "utc", "time"]
@@ -227,7 +219,6 @@ def compute_vader(texts):
 #           Used qualitatively to understand what topics drive each fanbase.
 #           Not used in the sentiment score.
 # =============================================================================
-
 # Positive and negative seed word sets.
 # These are general-purpose starters. Extend them after reviewing top TF-IDF
 # terms in the summary output to add baseball-specific vocabulary.
@@ -287,16 +278,13 @@ def compute_tfidf_context_score(texts, vectorizer, matrix):
     feature_names = vectorizer.get_feature_names_out()
     pos_idx = [i for i, t in enumerate(feature_names) if t in POSITIVE_SEEDS]
     neg_idx = [i for i, t in enumerate(feature_names) if t in NEGATIVE_SEEDS]
-
-    # Use sparse column slicing to avoid materializing the full dense matrix.
-    # matrix[:, idx].sum(axis=1) operates on sparse columns and stays in memory.
+    
     n_docs = matrix.shape[0]
     pos_mass = np.asarray(matrix[:, pos_idx].sum(axis=1)).flatten() if pos_idx \
                else np.zeros(n_docs)
     neg_mass = np.asarray(matrix[:, neg_idx].sum(axis=1)).flatten() if neg_idx \
                else np.zeros(n_docs)
     raw = pos_mass - neg_mass
-
     # scale=5 spreads values that are typically in [0, 0.3] across the tanh curve
     normed = np.tanh(raw * 5)
     return pd.Series(normed, index=texts.index)
@@ -320,11 +308,9 @@ def get_top_tfidf_terms(df, vectorizer, matrix, top_n=20):
     return results
 
 # =============================================================================
-# SECTION 4 -- SPORTS SENTIMENT PLACEHOLDER
-# Kenneth's layer goes here. Do not modify the function signatures.
+# SECTION 4 -- BASEBALL LEXICON SENTIMENT  (domain-specific signal)
+# Custom lexicon, applied via phrase + token matching.
 # =============================================================================
-
-# nltk.download("vader_lexicon", quiet=True)
 
 # Initialize VADER analyzer
 sia = SentimentIntensityAnalyzer()
@@ -333,6 +319,11 @@ sia = SentimentIntensityAnalyzer()
 sia.lexicon.update(baseball_lexicon)
 
 def extract_phrases(text, lexicon):
+    """
+    Match multi-word lexicon phrases (longest first) against text.
+    Removes matched phrases from the text to prevent double-counting.
+    Returns (matched_phrases, remaining_text).
+    """
     matched = []
     
     # Sort phrases by length (longest first)
@@ -350,6 +341,7 @@ def extract_phrases(text, lexicon):
     return matched, text
 
 def score_custom_lexicon(text):
+    """Score one text using phrase matching then token-level lookup."""
     score = 0.0
     
     # Extract phrases first
@@ -368,15 +360,12 @@ def score_custom_lexicon(text):
 
 def compute_sports_sentiment(texts):
     """
-    Uses custom baseball-aware sentiment logic.
-    Returns normalized score in [-1, 1] per text.
+    Apply the baseball lexicon to each text.
+    Raw scores are on VADER's [-4, +4] scale; normalized to [-1, 1] by dividing by 10.
+    Returns a Series of scores in [-1, 1].
     """
-
     # Lowercase
     texts = texts.astype(str).str.lower()
-
-    # VADER scores
-    # vader_scores = texts.apply(lambda t: sia.polarity_scores(t)["compound"])
 
     # Custom lexicon scores
     custom_scores = texts.apply(lambda t: score_custom_lexicon(t))
@@ -402,9 +391,8 @@ def combine_sentiment(vader, sports, tfidf_ctx):
       It handles negation, emphasis, and punctuation well for social text.
 
     W_SPORTS = 0.30
-      Reserved for Kenneth's domain-specific layer.
-      Currently contributes 0.0 everywhere (placeholder is neutral).
-      RAISE this weight (e.g., to 0.40-0.50) after his layer is integrated
+      Custom baseball lexicon is the critical domain-specific signal.
+      RAISE this weight (e.g., to 0.40-0.50) after its layer is integrated
       and validated against the VADER baseline.
 
     W_TFIDF  = 0.10
@@ -415,7 +403,7 @@ def combine_sentiment(vader, sports, tfidf_ctx):
     Final score is clipped to [-1, 1].
     """
     W_VADER  = 0.60   # <-- tune here
-    W_SPORTS = 0.30   # <-- raise after Kenneth's layer is in
+    W_SPORTS = 0.30   
     W_TFIDF  = 0.10   # <-- keep low; auxiliary only
 
     assert abs(W_VADER + W_SPORTS + W_TFIDF - 1.0) < 1e-9, \
@@ -473,6 +461,7 @@ def validate_sentiment(df, top_terms_by_team=None):
       4. Most positive and most negative records
       5. (If schedule merged) does sentiment track wins vs. losses?
       6. Score distribution: % positive / neutral / negative per team
+      7. Top TF-IDF terms per team (qualitative only)
     """
     print("\n" + "=" * 65)
     print("VALIDATION REPORT")
@@ -561,8 +550,7 @@ def run_pipeline(
         team_files (dict):          Team config dict. Defaults to TEAM_FILES above.
         run_validation (bool):      Whether to print the validation report.
 
-    Returns:
-        pd.DataFrame with all sentiment columns for downstream use.
+    Returns the scored DataFrame.
     """
     if team_files is None:
         team_files = TEAM_FILES
@@ -598,7 +586,11 @@ def run_pipeline(
     # Drop records where text is empty after cleaning
     df = df[df["text"].str.strip().str.len() > 0].reset_index(drop=True)
     print(f"[INFO] Records after dropping empty text: {len(df)}")
-
+    
+    # Remove auto-generated game thread posts (structured template, not fan sentiment)
+    df = df[~df["text"].str.contains("Line Score", na=False)].reset_index(drop=True)
+    print(f"[INFO] Records after removing game threads: {len(df)}")
+    
     # ---- VADER baseline (primary signal) ----
     print("[INFO] Computing VADER sentiment...")
     df["vader_sentiment"] = compute_vader(df["text"])
@@ -615,8 +607,8 @@ def run_pipeline(
     # Compute top terms per team for validation/analysis (not used in scoring)
     top_terms = get_top_tfidf_terms(df, vectorizer, tfidf_matrix, top_n=20)
 
-    # ---- Sports sentiment ----
-    print("[INFO] Computing sports sentiment...")
+    # ---- Baseball lexicon sentiment ----
+    print("[INFO] Computing baseball lexicon sentiment...")
     df["sports_sentiment"] = compute_sports_sentiment(df["text"])
 
     # ---- Final combined score ----

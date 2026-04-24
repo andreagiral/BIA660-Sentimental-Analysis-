@@ -296,4 +296,31 @@ baseball_lexicon = {
     "pain":             -3.0,
     "this team":        -1.5,   # often negative contextually
 
+    # HIGH-FREQUENCY GENERAL SENTIMENT — added after corpus analysis
+    # These appeared 800+ times in the Reddit data but were missing from v1.
+
+    # General negative (very common in fan discourse)
+    "bad":          -2.0,   # 3,546 occurrences
+    "worst":        -2.5,   # 1,530
+    "worse":        -1.5,   # 872
+    "shit":         -2.5,   # 1,802
+    "fuck":         -2.0,   # 1,372
+    "fucking":      -1.5,   # 1,483 — softer, often used as emphasis
+    "hate":         -2.0,   # 860
+    "lose":         -1.5,   # 1,056
+
+    # General positive (very common in fan discourse)
+    "won":           1.5,   # 1,205
+    "wins":          1.5,   # 1,141
+    "winning":       2.0,   # 1,128
+    "fun":           1.5,   # 1,512
+    "nice":          1.5,   # 1,452
+    "hope":          1.5,   # 1,791
+    "love":          2.0,   # 2,162
+
+    # Baseball-specific gaps
+    "hitting":       0.5,   # 1,216 — light positive, player is active/producing
+    "pitching":      0.5,   # 1,520 — neutral-positive
+    "trade":        -0.5,   # 1,866 — fan anxiety around trade deadline
+    "organization": -0.5,   # 973 — "this organization" is almost always negati
 }

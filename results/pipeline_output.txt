@@ -1,0 +1,365 @@
+REPO_ROOT: C:\Users\andre\OneDrive\MSDS Masters\Spring 2026\BIA 678\BIA660-Sentimental-Analysis-
+FILES IN ROOT: ['.git', '.gitattributes', '.gitignore', '.vscode', 'baseball_lexicon.py', 'clean_data.py', 'data', 'preprocess_reddit.py', 'Project Workflow.pdf', 'README.md', 'results', 'sentiment_modeling_&_validation.py', '__pycache__']
+REDDIT_DIR: C:\Users\andre\OneDrive\MSDS Masters\Spring 2026\BIA 678\BIA660-Sentimental-Analysis-\data\clean\reddit
+SCHEDULE_DIR: C:\Users\andre\OneDrive\MSDS Masters\Spring 2026\BIA 678\BIA660-Sentimental-Analysis-\data\clean\mlb
+[INFO] Loading CHW posts...
+[INFO] Loading CHW comments...
+[INFO] Loading COL posts...
+[INFO] Loading COL comments...
+[INFO] Loading MIL posts...
+[INFO] Loading MIL comments...
+[INFO] Loading MIN posts...
+[INFO] Loading MIN comments...
+[INFO] Loading NYY posts...
+[INFO] Loading NYY comments...
+[INFO] Loading PHI posts...
+[INFO] Loading PHI comments...
+[INFO] Loading TOR posts...
+[INFO] Loading TOR comments...
+[INFO] Loading WSN posts...
+[INFO] Loading WSN comments...
+
+[INFO] Total records loaded: 378724
+[INFO] Records after dropping empty text: 376272
+[INFO] Records after removing game threads: 374838
+[INFO] Computing VADER sentiment...
+[INFO] Building TF-IDF matrix...
+[INFO] Computing TF-IDF context scores (auxiliary feature)...
+[INFO] Computing baseball lexicon sentiment...
+[INFO] Computing final sentiment score...
+[INFO] Schedule merged for validation (8 team(s)).
+
+=================================================================
+VALIDATION REPORT
+=================================================================
+
+[1] 5 random sample records:
+team record_type       date                                                    text  vader_sentiment  sports_sentiment  tfidf_context  final_sentiment
+ WSN     comment 2025-06-17 Youre too lazy to google so it you expect other peop...          -0.3612              0.00       0.000000        -0.216720
+ TOR     comment 2025-04-16        Yimi fucking Garcia. Doesnt get better then that          -0.3412             -0.15       0.000000        -0.249720
+ NYY     comment 2025-09-20                                       Pathetic Offense.          -0.6908             -0.30      -0.999226        -0.604403
+ WSN     comment 2025-07-03 Its going to be my first Nats game live in years. I ...           0.1313              0.00       0.000000         0.078780
+ MIN     comment 2025-06-11                    Thought we had em there for a second           0.0000              0.00       0.000000         0.000000
+
+[2] Mean sentiment scores by team:
+      vader_sentiment  sports_sentiment  tfidf_context  final_sentiment
+team                                                                   
+CHW            0.1327           -0.0009         0.0891           0.0883
+COL            0.1407           -0.0090         0.0723           0.0889
+MIL            0.1312            0.0035         0.0889           0.0887
+MIN            0.1038           -0.0151         0.0703           0.0648
+NYY            0.0804           -0.0077         0.0626           0.0522
+PHI            0.0935           -0.0037         0.0702           0.0620
+TOR            0.1227            0.0050         0.0895           0.0841
+WSN            0.1345           -0.0018         0.0843           0.0886
+
+[3] Mean final_sentiment by team x week:
+team                  week  final_sentiment
+ CHW 2025-03-17/2025-03-23           0.0700
+ CHW 2025-03-24/2025-03-30           0.1002
+ CHW 2025-03-31/2025-04-06           0.0855
+ CHW 2025-04-07/2025-04-13           0.0720
+ CHW 2025-04-14/2025-04-20           0.0661
+ CHW 2025-04-21/2025-04-27           0.0559
+ CHW 2025-04-28/2025-05-04           0.0826
+ CHW 2025-05-05/2025-05-11           0.0781
+ CHW 2025-05-12/2025-05-18           0.0745
+ CHW 2025-05-19/2025-05-25           0.0850
+ CHW 2025-05-26/2025-06-01           0.0729
+ CHW 2025-06-02/2025-06-08           0.0891
+ CHW 2025-06-09/2025-06-15           0.0981
+ CHW 2025-06-16/2025-06-22           0.0833
+ CHW 2025-06-23/2025-06-29           0.0425
+ CHW 2025-06-30/2025-07-06           0.1019
+ CHW 2025-07-07/2025-07-13           0.1046
+ CHW 2025-07-14/2025-07-20           0.1266
+ CHW 2025-07-21/2025-07-27           0.0972
+ CHW 2025-07-28/2025-08-03           0.1097
+ CHW 2025-08-04/2025-08-10           0.0790
+ CHW 2025-08-11/2025-08-17           0.0969
+ CHW 2025-08-18/2025-08-24           0.0708
+ CHW 2025-08-25/2025-08-31           0.0644
+ CHW 2025-09-01/2025-09-07           0.1062
+ CHW 2025-09-08/2025-09-14           0.1418
+ CHW 2025-09-15/2025-09-21           0.1260
+ CHW 2025-09-22/2025-09-28           0.1164
+ CHW 2025-09-29/2025-10-05           0.1283
+ COL 2025-03-17/2025-03-23           0.0922
+ COL 2025-03-24/2025-03-30           0.0872
+ COL 2025-03-31/2025-04-06           0.0579
+ COL 2025-04-07/2025-04-13           0.0839
+ COL 2025-04-14/2025-04-20           0.0675
+ COL 2025-04-21/2025-04-27           0.1054
+ COL 2025-04-28/2025-05-04           0.1046
+ COL 2025-05-05/2025-05-11           0.0634
+ COL 2025-05-12/2025-05-18           0.0756
+ COL 2025-05-19/2025-05-25           0.0762
+ COL 2025-05-26/2025-06-01           0.0832
+ COL 2025-06-02/2025-06-08           0.1040
+ COL 2025-06-09/2025-06-15           0.0716
+ COL 2025-06-16/2025-06-22           0.1355
+ COL 2025-06-23/2025-06-29           0.1023
+ COL 2025-06-30/2025-07-06           0.0960
+ COL 2025-07-07/2025-07-13           0.0808
+ COL 2025-07-14/2025-07-20           0.1001
+ COL 2025-07-21/2025-07-27           0.1437
+ COL 2025-07-28/2025-08-03           0.1098
+ COL 2025-08-04/2025-08-10           0.0949
+ COL 2025-08-11/2025-08-17           0.1205
+ COL 2025-08-18/2025-08-24           0.1111
+ COL 2025-08-25/2025-08-31           0.1263
+ COL 2025-09-01/2025-09-07           0.0485
+ COL 2025-09-08/2025-09-14           0.0717
+ COL 2025-09-15/2025-09-21           0.0854
+ COL 2025-09-22/2025-09-28           0.0863
+ COL 2025-09-29/2025-10-05           0.0547
+ MIL 2025-03-17/2025-03-23           0.1515
+ MIL 2025-03-24/2025-03-30           0.0587
+ MIL 2025-03-31/2025-04-06           0.0606
+ MIL 2025-04-07/2025-04-13           0.0764
+ MIL 2025-04-14/2025-04-20           0.0795
+ MIL 2025-04-21/2025-04-27           0.0779
+ MIL 2025-04-28/2025-05-04           0.0826
+ MIL 2025-05-05/2025-05-11           0.0498
+ MIL 2025-05-12/2025-05-18           0.0852
+ MIL 2025-05-19/2025-05-25           0.0638
+ MIL 2025-05-26/2025-06-01           0.0943
+ MIL 2025-06-02/2025-06-08           0.0778
+ MIL 2025-06-09/2025-06-15           0.0950
+ MIL 2025-06-16/2025-06-22           0.0976
+ MIL 2025-06-23/2025-06-29           0.1015
+ MIL 2025-06-30/2025-07-06           0.0779
+ MIL 2025-07-07/2025-07-13           0.1010
+ MIL 2025-07-14/2025-07-20           0.1020
+ MIL 2025-07-21/2025-07-27           0.0829
+ MIL 2025-07-28/2025-08-03           0.1076
+ MIL 2025-08-04/2025-08-10           0.1182
+ MIL 2025-08-11/2025-08-17           0.1017
+ MIL 2025-08-18/2025-08-24           0.0778
+ MIL 2025-08-25/2025-08-31           0.0795
+ MIL 2025-09-01/2025-09-07           0.0890
+ MIL 2025-09-08/2025-09-14           0.0727
+ MIL 2025-09-15/2025-09-21           0.0990
+ MIL 2025-09-22/2025-09-28           0.0851
+ MIL 2025-09-29/2025-10-05           0.0906
+ MIN 2025-03-17/2025-03-23           0.0605
+ MIN 2025-03-24/2025-03-30           0.0496
+ MIN 2025-03-31/2025-04-06           0.0491
+ MIN 2025-04-07/2025-04-13           0.0429
+ MIN 2025-04-14/2025-04-20           0.0358
+ MIN 2025-04-21/2025-04-27           0.0499
+ MIN 2025-04-28/2025-05-04           0.0639
+ MIN 2025-05-05/2025-05-11           0.0961
+ MIN 2025-05-12/2025-05-18           0.0944
+ MIN 2025-05-19/2025-05-25           0.0909
+ MIN 2025-05-26/2025-06-01           0.0732
+ MIN 2025-06-02/2025-06-08           0.0810
+ MIN 2025-06-09/2025-06-15           0.0332
+ MIN 2025-06-16/2025-06-22           0.0617
+ MIN 2025-06-23/2025-06-29           0.0511
+ MIN 2025-06-30/2025-07-06           0.0638
+ MIN 2025-07-07/2025-07-13           0.1227
+ MIN 2025-07-14/2025-07-20           0.0885
+ MIN 2025-07-21/2025-07-27           0.0681
+ MIN 2025-07-28/2025-08-03           0.0573
+ MIN 2025-08-04/2025-08-10           0.0820
+ MIN 2025-08-11/2025-08-17           0.0514
+ MIN 2025-08-18/2025-08-24           0.0435
+ MIN 2025-08-25/2025-08-31           0.0837
+ MIN 2025-09-01/2025-09-07           0.0365
+ MIN 2025-09-08/2025-09-14           0.0793
+ MIN 2025-09-15/2025-09-21           0.0839
+ MIN 2025-09-22/2025-09-28           0.0965
+ MIN 2025-09-29/2025-10-05           0.0616
+ NYY 2025-03-17/2025-03-23           0.1148
+ NYY 2025-03-24/2025-03-30           0.0876
+ NYY 2025-03-31/2025-04-06           0.0641
+ NYY 2025-04-07/2025-04-13           0.0472
+ NYY 2025-04-14/2025-04-20           0.0833
+ NYY 2025-04-21/2025-04-27           0.0592
+ NYY 2025-04-28/2025-05-04           0.0707
+ NYY 2025-05-05/2025-05-11           0.0731
+ NYY 2025-05-12/2025-05-18           0.0718
+ NYY 2025-05-19/2025-05-25           0.0675
+ NYY 2025-05-26/2025-06-01           0.0714
+ NYY 2025-06-02/2025-06-08           0.0751
+ NYY 2025-06-09/2025-06-15           0.0318
+ NYY 2025-06-16/2025-06-22           0.0303
+ NYY 2025-06-23/2025-06-29           0.0478
+ NYY 2025-06-30/2025-07-06           0.0273
+ NYY 2025-07-07/2025-07-13           0.0878
+ NYY 2025-07-14/2025-07-20           0.0862
+ NYY 2025-07-21/2025-07-27           0.0422
+ NYY 2025-07-28/2025-08-03           0.0340
+ NYY 2025-08-04/2025-08-10           0.0169
+ NYY 2025-08-11/2025-08-17           0.0617
+ NYY 2025-08-18/2025-08-24           0.0248
+ NYY 2025-08-25/2025-08-31           0.0716
+ NYY 2025-09-01/2025-09-07           0.0317
+ NYY 2025-09-08/2025-09-14           0.0298
+ NYY 2025-09-15/2025-09-21           0.0727
+ NYY 2025-09-22/2025-09-28           0.0697
+ NYY 2025-09-29/2025-10-05           0.0309
+ PHI 2025-03-17/2025-03-23           0.0917
+ PHI 2025-03-24/2025-03-30           0.0749
+ PHI 2025-03-31/2025-04-06           0.0666
+ PHI 2025-04-07/2025-04-13           0.0412
+ PHI 2025-04-14/2025-04-20           0.0442
+ PHI 2025-04-21/2025-04-27           0.0300
+ PHI 2025-04-28/2025-05-04           0.0746
+ PHI 2025-05-05/2025-05-11           0.0992
+ PHI 2025-05-12/2025-05-18           0.0553
+ PHI 2025-05-19/2025-05-25           0.0655
+ PHI 2025-05-26/2025-06-01           0.0459
+ PHI 2025-06-02/2025-06-08           0.0575
+ PHI 2025-06-09/2025-06-15           0.0779
+ PHI 2025-06-16/2025-06-22           0.0345
+ PHI 2025-06-23/2025-06-29           0.0356
+ PHI 2025-06-30/2025-07-06           0.0821
+ PHI 2025-07-07/2025-07-13           0.0375
+ PHI 2025-07-14/2025-07-20           0.0734
+ PHI 2025-07-21/2025-07-27           0.0589
+ PHI 2025-07-28/2025-08-03           0.0685
+ PHI 2025-08-04/2025-08-10           0.0820
+ PHI 2025-08-11/2025-08-17           0.0511
+ PHI 2025-08-18/2025-08-24           0.0723
+ PHI 2025-08-25/2025-08-31           0.0265
+ PHI 2025-09-01/2025-09-07           0.0701
+ PHI 2025-09-08/2025-09-14           0.0889
+ PHI 2025-09-15/2025-09-21           0.0878
+ PHI 2025-09-22/2025-09-28           0.0864
+ PHI 2025-09-29/2025-10-05           0.1186
+ TOR 2025-03-17/2025-03-23           0.1077
+ TOR 2025-03-24/2025-03-30           0.0687
+ TOR 2025-03-31/2025-04-06           0.0782
+ TOR 2025-04-07/2025-04-13           0.0819
+ TOR 2025-04-14/2025-04-20           0.0894
+ TOR 2025-04-21/2025-04-27           0.0623
+ TOR 2025-04-28/2025-05-04           0.0700
+ TOR 2025-05-05/2025-05-11           0.0826
+ TOR 2025-05-12/2025-05-18           0.0669
+ TOR 2025-05-19/2025-05-25           0.0924
+ TOR 2025-05-26/2025-06-01           0.0853
+ TOR 2025-06-02/2025-06-08           0.1006
+ TOR 2025-06-09/2025-06-15           0.0910
+ TOR 2025-06-16/2025-06-22           0.0753
+ TOR 2025-06-23/2025-06-29           0.0805
+ TOR 2025-06-30/2025-07-06           0.0832
+ TOR 2025-07-07/2025-07-13           0.0931
+ TOR 2025-07-14/2025-07-20           0.1144
+ TOR 2025-07-21/2025-07-27           0.1023
+ TOR 2025-07-28/2025-08-03           0.0842
+ TOR 2025-08-04/2025-08-10           0.0830
+ TOR 2025-08-11/2025-08-17           0.1047
+ TOR 2025-08-18/2025-08-24           0.0714
+ TOR 2025-08-25/2025-08-31           0.0849
+ TOR 2025-09-01/2025-09-07           0.0584
+ TOR 2025-09-08/2025-09-14           0.0877
+ TOR 2025-09-15/2025-09-21           0.0627
+ TOR 2025-09-22/2025-09-28           0.0794
+ TOR 2025-09-29/2025-10-05           0.1132
+ WSN 2025-03-17/2025-03-23           0.1352
+ WSN 2025-03-24/2025-03-30           0.1040
+ WSN 2025-03-31/2025-04-06           0.0644
+ WSN 2025-04-07/2025-04-13           0.0995
+ WSN 2025-04-14/2025-04-20           0.0727
+ WSN 2025-04-21/2025-04-27           0.1018
+ WSN 2025-04-28/2025-05-04           0.0870
+ WSN 2025-05-05/2025-05-11           0.0907
+ WSN 2025-05-12/2025-05-18           0.0777
+ WSN 2025-05-19/2025-05-25           0.1138
+ WSN 2025-05-26/2025-06-01           0.0923
+ WSN 2025-06-02/2025-06-08           0.1099
+ WSN 2025-06-09/2025-06-15           0.0391
+ WSN 2025-06-16/2025-06-22           0.0453
+ WSN 2025-06-23/2025-06-29           0.0865
+ WSN 2025-06-30/2025-07-06           0.1001
+ WSN 2025-07-07/2025-07-13           0.0961
+ WSN 2025-07-14/2025-07-20           0.1031
+ WSN 2025-07-21/2025-07-27           0.1198
+ WSN 2025-07-28/2025-08-03           0.0896
+ WSN 2025-08-04/2025-08-10           0.0782
+ WSN 2025-08-11/2025-08-17           0.0737
+ WSN 2025-08-18/2025-08-24           0.0911
+ WSN 2025-08-25/2025-08-31           0.0738
+ WSN 2025-09-01/2025-09-07           0.0957
+ WSN 2025-09-08/2025-09-14           0.1157
+ WSN 2025-09-15/2025-09-21           0.0848
+ WSN 2025-09-22/2025-09-28           0.1445
+ WSN 2025-09-29/2025-10-05           0.1898
+
+[4a] Most POSITIVE records (top 5):
+  [MIL | 2025-09-14 | score=0.998]
+  I think you may be right, but I do think people are kind of forgetting just how good the team has been in the last 
+
+  [WSN | 2025-05-05 | score=0.997]
+  The 2019 team had the remnants of a championship team on paper, including two of the most dominant starters in the 
+
+  [NYY | 2025-09-21 | score=0.997]
+  Grand slam in extras powers the Yankees past the Orioles, magic number down to 3 In the Yankees' final time on the 
+
+  [NYY | 2025-05-07 | score=0.996]
+  I don't want to sound like a dick, but it's almost laughable that people still believe the World Series is anything
+
+  [NYY | 2025-07-12 | score=0.996]
+  All-Star Rodon dominates, Bellinger belts 3 HRs in Yankees 5th straight win New YorkThe Yankees dominated the Cubs 
+
+[4b] Most NEGATIVE records (top 5):
+  [PHI | 2025-08-27 | score=-0.997]
+  I hate the mets I hate the mets I hate the mets I hate the mets I hate the mets I hate the mets I hate the mets I h
+
+  [COL | 2025-05-11 | score=-0.996]
+  The crowd makes me sad Historically awful season, no one should be going to these games but I just saw the Heyward 
+
+  [COL | 2025-04-16 | score=-0.993]
+  They say high tide raises all boats - but conversely its tough to find a groove when everyone around you is collect
+
+  [COL | 2025-04-12 | score=-0.992]
+  I honestly thought the team took steps backward in the off-season unlike a lot of people, it seems but I didn't exp
+
+  [COL | 2025-05-10 | score=-0.990]
+  It was one of the worst seasons in the NHL and the worst in 17 years, but I'm going to have to agree with you that 
+
+[5] Mean final_sentiment by game outcome (win=1, loss=0):
+win      0.0     1.0
+team                
+CHW   0.0791  0.0928
+COL   0.0858  0.0941
+MIL   0.0713  0.0946
+MIN   0.0545  0.0736
+NYY   0.0379  0.0624
+PHI   0.0458  0.0666
+TOR   0.0763  0.0824
+WSN   0.0782  0.0917
+  Expected: sentiment higher on win days than loss days.
+
+[6] Score distribution by team (% of records):
+team     n pct_positive pct_neutral pct_negative mean_final
+ CHW 47485        47.2%       27.3%        25.5%     0.0883
+ COL 48516        48.8%       24.9%        26.3%     0.0889
+ MIL 46391        45.2%       31.4%        23.4%     0.0887
+ MIN 47945        43.8%       29.2%        27.0%     0.0648
+ NYY 47869        43.2%       27.5%        29.4%     0.0522
+ PHI 47345        43.2%       29.6%        27.1%     0.0620
+ TOR 46961        44.9%       31.8%        23.3%     0.0841
+ WSN 48302        47.3%       27.3%        25.4%     0.0886
+
+[7] Top TF-IDF terms per team (qualitative analysis only):
+  CHW: sox(0.0250), just(0.0145), like(0.0143), good(0.0126), team(0.0124), game(0.0113), white(0.0109), year(0.0107), white sox(0.0102), hes(0.0093), think(0.0089), time(0.0086), im(0.0086), got(0.0082), lol(0.0082)
+  COL: rockies(0.0307), team(0.0163), game(0.0143), just(0.0139), like(0.0129), good(0.0109), baseball(0.0092), think(0.0085), time(0.0083), season(0.0082), lol(0.0082), year(0.0081), games(0.0080), going(0.0078), win(0.0074)
+  MIL: brewers(0.0183), just(0.0160), like(0.0144), game(0.0140), good(0.0104), lol(0.0099), team(0.0091), think(0.0086), time(0.0083), cubs(0.0080), got(0.0076), right(0.0075), going(0.0071), year(0.0070), love(0.0070)
+  MIN: twins(0.0250), just(0.0156), team(0.0150), like(0.0144), game(0.0129), good(0.0108), year(0.0087), time(0.0083), pohlads(0.0080), think(0.0078), going(0.0074), baseball(0.0074), correa(0.0074), season(0.0073), right(0.0071)
+  NYY: yankees(0.0177), just(0.0148), volpe(0.0148), judge(0.0146), game(0.0144), like(0.0142), boone(0.0137), team(0.0111), fucking(0.0108), good(0.0102), lol(0.0087), jazz(0.0086), year(0.0083), think(0.0082), time(0.0082)
+  PHI: phillies(0.0163), just(0.0149), game(0.0145), like(0.0144), good(0.0108), lol(0.0089), team(0.0087), think(0.0080), right(0.0078), im(0.0077), time(0.0077), mets(0.0075), fucking(0.0074), hes(0.0073), year(0.0070)
+  TOR: jays(0.0176), like(0.0139), just(0.0139), game(0.0131), good(0.0109), team(0.0086), lol(0.0083), time(0.0083), vladdy(0.0082), love(0.0078), think(0.0075), blue(0.0074), right(0.0073), bo(0.0073), going(0.0070)
+  WSN: nats(0.0181), just(0.0155), game(0.0154), like(0.0153), team(0.0121), good(0.0118), think(0.0093), time(0.0089), year(0.0088), wood(0.0086), im(0.0078), really(0.0077), season(0.0075), got(0.0075), right(0.0072)
+
+=================================================================
+
+[SAVED] Per-record results  ->  C:\Users\andre\OneDrive\MSDS Masters\Spring 2026\BIA 678\BIA660-Sentimental-Analysis-\results\sentiment_results.csv
+[SAVED] Validation summary  ->  C:\Users\andre\OneDrive\MSDS Masters\Spring 2026\BIA 678\BIA660-Sentimental-Analysis-\results\sentiment_summary.csv
+
+[DONE] Pipeline complete.
+  Total records scored : 380814
+  Teams processed      : ['CHW', 'COL', 'MIL', 'MIN', 'NYY', 'PHI', 'TOR', 'WSN']
+  Output columns       : ['vader_sentiment', 'tfidf_context', 'sports_sentiment', 'final_sentiment']

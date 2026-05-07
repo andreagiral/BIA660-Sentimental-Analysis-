@@ -65,3 +65,139 @@ Cleaned data is sorted into two directories and saved as follows:
     - There may be additional options, like for ties (which are rare), but I haven't confirmed
 - `R` - Runs scored
 - `RA` - Runs allowed
+
+## Sentiment Modeling & Validation
+
+### Run `sentiment_modeling_&_validation.py`
+
+Constructs the final sentiment indicator used throughout the project.
+
+The pipeline:
+- Loads cleaned Reddit posts and comments for all MLB teams
+- Combines title + body into a single text field
+- Computes baseline sentiment using VADER
+- Computes contextual TF-IDF features
+- Integrates a custom baseball sentiment lexicon
+- Produces a final weighted sentiment score
+
+### Sentiment Components
+
+#### 1. VADER Baseline
+Uses the VADER sentiment analyzer to generate a compound sentiment score between `-1` and `1`.
+
+Designed for:
+- social media text
+- punctuation emphasis
+- capitalization
+- negation handling
+
+#### 2. Baseball-Specific Sentiment Lexicon
+Adds domain-specific baseball language and fan discourse not captured well by generic sentiment tools.
+
+Examples:
+- positive:
+  - `filthy`
+  - `walk-off`
+  - `winning`
+- negative:
+  - `washed`
+  - `dumpster fire`
+  - `bullpen collapse`
+
+The lexicon was expanded using high-frequency terms identified during corpus analysis.
+
+#### 3. TF-IDF Context Features
+Uses TF-IDF as a lightweight contextual feature.
+
+Purpose:
+- identify important words within fan discussions
+- provide directional/contextual adjustment
+- NOT used as a standalone sentiment classifier
+
+### Final Sentiment Score
+
+The final score combines all three components:
+
+```python
+final_sentiment =
+    0.60 * vader_sentiment +
+    0.30 * sports_sentiment +
+    0.10 * tfidf_context
+```
+
+Final scores are clipped to the range `[-1, 1]`.
+
+### Output Files
+
+Generated files:
+
+#### Results
+- `results/sentiment_results.csv`
+- `results/sentiment_summary.csv`
+- `results/pipeline_output.txt`
+
+#### Statistical Analysis / Visualizations
+Saved under `stats/`
+
+- `fig1_sentiment_over_time.png`
+- `fig2_sentiment_vs_winpct.png`
+- `fig3_wins_vs_losses.png`
+- `fig4_recent_performance.png`
+- `fig6a_cross_team_reactivity.png`
+- `fig6b_alignment_vs_reactivity.png`
+- `fig7_components.png`
+
+### Validation
+
+Validation checks include:
+- sentiment differences between wins and losses
+- score distribution analysis
+- cross-team consistency
+- temporal trend analysis
+- extreme positive/negative case checks
+- TF-IDF qualitative term inspection
+
+Results showed:
+- sentiment was consistently higher after wins than losses
+- realistic distributions of positive, neutral, and negative sentiment
+- stable trends across teams and time periods
+
+---
+
+# Repository Structure
+
+```text
+BIA660-Sentimental-Analysis-/
+│
+├── data/
+│   ├── clean/
+│   │   ├── mlb/
+│   │   └── reddit/
+│   │
+│   └── raw/
+│       ├── mlb/
+│       └── reddit/
+│
+├── results/
+│   ├── pipeline_output.txt
+│   ├── sentiment_results.csv
+│   └── sentiment_summary.csv
+│
+├── stats/
+│   ├── fig1_sentiment_over_time.png
+│   ├── fig2_sentiment_vs_winpct.png
+│   ├── fig3_wins_vs_losses.png
+│   ├── fig4_recent_performance.png
+│   ├── fig6a_cross_team_reactivity.png
+│   ├── fig6b_alignment_vs_reactivity.png
+│   ├── fig7_components.png
+│   └── sentiment_analytics.ipynb
+│
+├── baseball_lexicon.py
+├── preprocess_reddit.py
+├── clean_data.py
+├── sentiment_modeling_&_validation.py
+├── README.md
+└── Project Workflow.pdf
+
+```
